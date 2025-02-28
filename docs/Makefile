@@ -25,5 +25,7 @@ show:
 
 docs:
 	rm -rf source/_code_reference
+	make fake-target
 	make clean
 	make html
+	make phonyy
