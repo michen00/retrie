@@ -25,5 +25,5 @@ show:
 
 docs:
 	rm -rf source/_code_reference
-	make clean
+	make clean --debug=vvv
 	make html
