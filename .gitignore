@@ -4,3 +4,6 @@ docs/source/_code_reference/
 
 # setuptools_scm
 _repo_version.py
+
+.eggs
+*.egg-info

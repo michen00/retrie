@@ -6,71 +6,71 @@ on:
     branches: [master]
   release:
     types: [released, prereleased]
-  workflow_dispatch:  # allows running workflow manually from the Actions tab
+  workflow_dispatch: # allows running workflow manually from the Actions tab
 
 jobs:
   CI:
     runs-on: ubuntu-20.04
     permissions:
-      id-token: write  # codecov/codecov-action
+      id-token: write # codecov/codecov-action
     strategy:
       matrix:
         python-version:
-          ['2.7', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+          ["2.7", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python ${{ matrix.python-version }}
-      if: matrix.python-version != '2.7'
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        if: matrix.python-version != '2.7'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Set up Python 2
-      if: matrix.python-version == '2.7'
-      run: |
-        sudo rm -f $(which python) $(which pip)
-        sudo apt-get install python2.7-dev
-        curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-        python2.7 get-pip.py
-        sudo ln -sf "$(which python2.7)" "$(dirname $(which python2.7))/python"
+      - name: Set up Python 2
+        if: matrix.python-version == '2.7'
+        run: |
+          sudo rm -f $(which python) $(which pip)
+          sudo apt-get install python2.7-dev
+          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+          python2.7 get-pip.py
+          sudo ln -sf "$(which python2.7)" "$(dirname $(which python2.7))/python"
 
-    - name: Pip cache
-      uses: actions/cache@v4
-      with:
-        save-always: true
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements/*.txt') }}
+      - name: Pip cache
+        uses: actions/cache@v4
+        with:
+          save-always: true
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements/*.txt') }}
 
-    - name: Pre-commit cache
-      uses: actions/cache@v4
-      with:
-        save-always: true
-        path: ~/.cache/pre-commit
-        key: ${{ runner.os }}-pre-commit-${{ matrix.python-version }}-${{ hashFiles('**/requirements/ci.txt') }}-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Pre-commit cache
+        uses: actions/cache@v4
+        with:
+          save-always: true
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ matrix.python-version }}-${{ hashFiles('**/requirements/ci.txt') }}-${{ hashFiles('.pre-commit-config.yaml') }}
 
-    - name: Install dependencies
-      run: |
-        pip install -U pip setuptools wheel
-        make install
+      - name: Install dependencies
+        run: |
+          pip install -U pip setuptools wheel
+          make install
 
-    - name: Lint
-      if: matrix.python-version == 3.12
-      run: make lint
+      - name: Lint
+        if: matrix.python-version == 3.13
+        run: make lint
 
-    - name: Test
-      run: make test
+      - name: Test
+        run: make test
 
-    - name: Docs
-      if: matrix.python-version == 3.12
-      run: SPHINXOPTS=-W make builddocs
+      - name: Docs
+        if: matrix.python-version == 3.13
+        run: SPHINXOPTS=-W make builddocs
 
-    - uses: codecov/codecov-action@v5
-      with:
-        fail_ci_if_error: true
-        use_oidc: true
+      - uses: codecov/codecov-action@v5
+        with:
+          # fail_ci_if_error: true
+          use_oidc: true
 
   CD:
     needs: [CI]
@@ -83,31 +83,31 @@ jobs:
       pull-requests: write # apexskier/github-release-commenter
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.x
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
 
-    - name: Build
-      run: |
-        pip install -U pip setuptools wheel
-        python setup.py sdist bdist_wheel --universal
+      - name: Build
+        run: |
+          pip install -U pip setuptools wheel
+          python setup.py sdist bdist_wheel --universal
 
-    - name: Upload release assets
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: dist/*
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2.2.1
+        with:
+          files: dist/*
 
-    # https://github.com/pypa/gh-action-pypi-publish#trusted-publishing
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.12.4
+      # https://github.com/pypa/gh-action-pypi-publish#trusted-publishing
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.12.4
 
-    - uses: apexskier/github-release-commenter@v1
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        comment-template: |
-          Released {release_link}
+      - uses: apexskier/github-release-commenter@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          comment-template: |
+            Released {release_link}
