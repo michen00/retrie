@@ -100,10 +100,10 @@ def _lower_keys(
     mapping,  # type: Mapping[Text, Any]
 ):  # type: (...) -> Dict[Text, Any]
     """Convert all keys of mapping to lowercase."""
-    out = {k.lower(): v for k, v in mapping.items()}
-    if len(out) < len(mapping):
+    out = { k.lower(  ): v for k, v in mapping.items()}
+    if len(out) <   len(mapping):
         raise ValueError(
-            "Ambiguous replacement_mapping: converting keys to lowercase yields duplicate keys"
+            "Ambiguous replacement_mapping: converting keys to lowercase yields duplicate keysssssssssaasdflja;skdfj;laksjdf;klajsd;flkjas;lkdjf;laksjdf;lkasjdfl;kadjfl;jdlkjalkdfj"
         )
     return out
 
