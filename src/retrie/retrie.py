@@ -75,6 +75,7 @@ The :class:`Replacer` class does a fast single-pass search & replace for occurre
     # re.compile(r'(?<= )(?:ab[cs]|foo)(?= )', re.IGNORECASE|re.UNICODE)
     assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
 """
+
 import re
 from typing import (  # noqa:F401
     Any,
@@ -100,10 +101,10 @@ def _lower_keys(
     mapping,  # type: Mapping[Text, Any]
 ):  # type: (...) -> Dict[Text, Any]
     """Convert all keys of mapping to lowercase."""
-    out = { k.lower(  ): v for k, v in mapping.items()}
-    if len(out) <   len(mapping):
+    out = {k.lower(): v for k, v in mapping.items()}
+    if len(out) < len(mapping):
         raise ValueError(
-            "Ambiguous replacement_mapping: converting keys to lowercase yields duplicate keysssssssssaasdflja;skdfj;laksjdf;klajsd;flkjas;lkdjf;laksjdf;lkasjdfl;kadjfl;jdlkjalkdfj"
+            "Ambiguous replacement_mapping: converting keys to lowercase yields duplicate keys"
         )
     return out
 
@@ -221,7 +222,8 @@ class Checklist(Retrie):
         return self.compile()
 
     def is_listed(
-        self, term  # type: Text
+        self,
+        term,  # type: Text
     ):  # type: (...) -> bool
         """Return True if Pattern is found in term.
 
@@ -231,7 +233,8 @@ class Checklist(Retrie):
         return bool(self.compiled.search(term))
 
     def not_listed(
-        self, term  # type: Text
+        self,
+        term,  # type: Text
     ):  # type: (...) -> bool
         """Return True if Pattern is not found in term.
 
@@ -271,7 +274,8 @@ class Blacklist(Checklist):
         )
 
     def is_blacklisted(
-        self, term  # type: Text
+        self,
+        term,  # type: Text
     ):  # type: (...) -> bool
         """Return True if Pattern is found in term.
 
@@ -292,7 +296,8 @@ class Blacklist(Checklist):
         return filter(self.not_listed, sequence)
 
     def cleanse_text(
-        self, term  # type: Text
+        self,
+        term,  # type: Text
     ):  # type: (...) -> Text
         """Return text, removing all blacklisted terms.
 
@@ -332,7 +337,8 @@ class Whitelist(Checklist):
         )
 
     def is_whitelisted(
-        self, term  # type: Text
+        self,
+        term,  # type: Text
     ):  # type: (...) -> bool
         """Return True if Pattern is found in term.
 
@@ -353,7 +359,8 @@ class Whitelist(Checklist):
         return filter(self.is_listed, sequence)
 
     def cleanse_text(
-        self, term  # type: Text
+        self,
+        term,  # type: Text
     ):  # type: (...) -> Text
         """Return text, only keeping whitelisted terms.
 
@@ -401,7 +408,8 @@ class Replacer(Checklist):
         )
 
     def _replace(
-        self, match  # type: Match[Text]
+        self,
+        match,  # type: Match[Text]
     ):  # type: (...) -> Text
         """Helper for dict lookup in re.sub."""
         key = (
